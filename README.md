@@ -28,15 +28,15 @@ You should see many, many more squares appear.
 `python wow.py`
 7. Now, this is the tricky part. Your image viewer has opened and you will see something like this:
 
-![Misaligned dots](https://github.com/wodim/wow-discord-rich-presence/raw/master/images/misaligned-squares.png)
+    ![Misaligned dots](https://github.com/wodim/wow-discord-rich-presence/raw/master/images/misaligned-squares.png)
 
-That's really bad! Every one of the white dots has to be right at the centre of every one of the squares.
+    That's really bad! Every one of the white dots has to be right at the centre of every one of the squares.
 8. Open wow.py with a text editor. You will see a variable called `MY_WIDTH` at the top. You have to tweak it and run the wow.py script again (remember, using `python wow.py`) until all the dots are aligned. Most likely you will have to use decimals. In the end, it will look like this:
 
-![Aligned dots](https://github.com/wodim/wow-discord-rich-presence/raw/master/images/aligned-squares.png)
+    ![Aligned dots](https://github.com/wodim/wow-discord-rich-presence/raw/master/images/aligned-squares.png)
 
-That's so much better. Also, if you look in the command prompt, you will see the text has been read correctly by the script:
-`Read: This is just a test I'm making to make sure my Python script can read the squares that appear in my World of Warcraft window. :-)`
+    That's so much better. Also, if you look in the command prompt, you will see the text has been read correctly by the script:
+    `Read: This is just a test I'm making to make sure my Python script can read the squares that appear in my World of Warcraft window. :-)`
 9. Edit the wow.py file again, this time change `DEBUG = 1` to `DEBUG = 0`.
 
 From now on, you can double-click the wow.py file and it will work by itself. Your rich presence will be updated automatically as long as the script is kept running. You can just create a shortcut to this script on your Desktop and open it every time you open WoW.
