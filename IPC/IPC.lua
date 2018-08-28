@@ -96,7 +96,7 @@ function IPC_EncodeZoneType()
         dynamicDifficulty, isDynamic, instanceMapId, lfgID = GetInstanceInfo()
     local zone_name = GetRealZoneText()
     if type == 'party' then
-        status = 'In Party'
+        status = 'In Dungeon'
     elseif type == 'raid' then
         status = 'In Raid'
     elseif type == 'pvp' then
