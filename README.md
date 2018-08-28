@@ -1,6 +1,6 @@
 # Discord rich presence for World of Warcraft
 
-![It's alive](https://github.com/wodim/wow-discord-rich-presence/raw/master/images/rich-presence.png)
+![STV](https://github.com/wodim/wow-discord-rich-presence/raw/master/images/rich-presence-1.png) ![WSG](https://github.com/wodim/wow-discord-rich-presence/raw/master/images/rich-presence-2.png)
 
 Important: this requires a bit of patience and setup to make it work, so bear with me.
 
