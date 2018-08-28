@@ -83,8 +83,8 @@ def callback(hwnd, extra):
         _, zone_name, type_, _ = parts
 
         activity = {
-            'state': zone_name,
-            'details': type_,
+            'state': type_,
+            'details': zone_name,
             'assets': {
                 'large_image': 'wow-icon'
             }
