@@ -1,0 +1,4 @@
+## Interface: 30300
+## Title: IPC
+## Notes: Colour-coded messages on the top of your screen
+IPC.xml
