@@ -82,15 +82,6 @@ def callback(hwnd, extra):
 
         _, zone_name, type_, _ = parts
 
-        if type_ == 'party':
-            type_ = 'In Dungeon'
-        elif type_ == 'raid':
-            type_ = 'In Raid'
-        elif type_ == 'pvp':
-            type_ = 'In Battleground'
-        else:
-            type_ = 'In the overworld'
-
         activity = {
             'state': zone_name,
             'details': type_,

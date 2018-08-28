@@ -1,5 +1,6 @@
 frame_count = 0
 frames = {}
+last_status = nil
 
 function IPC_CreateFrames()
     local size = 12
@@ -76,12 +77,51 @@ function IPC_PaintSomething(text)
     IPC_PaintFrame(frames[squares_painted], 0, 0, 0, 1)
 end
 
+function GetContinentName(continentID)
+    -- this is here because it doesn't exist in wotlk. if you are porting this
+    -- to retail you'll just have to remove this whole function.
+    if continentID == 1 then
+        return 'Kalimdor'
+    elseif continentID == 2 then
+        return 'Eastern Kingdoms'
+    elseif continentID == 3 then
+        return 'Outland'
+    elseif continentID == 4 then
+        return 'Northrend'
+    end
+end
+
 function IPC_EncodeZoneType()
     local name, type, difficultyIndex, difficultyName, maxPlayers,
         dynamicDifficulty, isDynamic, instanceMapId, lfgID = GetInstanceInfo()
     local zone_name = GetRealZoneText()
+    if type == 'party' then
+        status = 'In Party'
+    elseif type == 'raid' then
+        status = 'In Raid'
+    elseif type == 'pvp' then
+        status = 'In Battleground'
+    else
+        -- if the world map is open we can't rely on it so send the last status
+        -- or something generic if we've never seen a status
+        if WorldMapFrame:IsVisible() then
+            if last_status == nil then
+                status = 'In the overworld'
+            else
+                status = last_status
+            end
+        else
+            local continent_name = GetContinentName(GetCurrentMapContinent())
+            if continent_name then
+                status = continent_name
+                last_status = status
+            else
+                status = 'In the overworld'
+            end
+        end
+    end
     if zone_name == "" or zone_name == nil then return nil end
-    local encoded = "|" .. zone_name .. "|" .. type .. "|"
+    local encoded = "|" .. zone_name .. "|" .. status .. "|"
     return encoded
 end
 
