@@ -86,7 +86,6 @@ def callback(hwnd, extra):
             'state': zone_name,
             'details': type_,
             'assets': {
-                'large_text': 'World of Warcraft',
                 'large_image': 'wow-icon'
             }
         }
