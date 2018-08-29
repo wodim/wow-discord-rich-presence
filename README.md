@@ -4,7 +4,7 @@
 
 Important: this requires a bit of patience and setup to make it work, so bear with me.
 
-I play WotLK so this may not work on other versions of WoW, but you are welcome to try and tell me if it does.
+I play Vanilla and WotLK so this may not work on other versions of WoW, but you are welcome to try and tell me if it does.
 
 ## Requirements
 
@@ -14,7 +14,7 @@ I play WotLK so this may not work on other versions of WoW, but you are welcome 
 
 1. [Download a copy of this repo](https://github.com/wodim/wow-discord-rich-presence/archive/master.zip) and decompress it. Inside you will find a WoW addon and a Python script.
 
-2. Install the WoW addon by copying the **IPC** folder to your _Interface/Addons_ directory and make sure it loads. When you log in, you will see a few coloured squares on top of your portrait.
+2. Install the WoW addon by copying the correct **IPC (Expansion)** folder to your _Interface/Addons_ directory, rename it to **IPC** and make sure it loads. When you log in, you will see a few coloured squares on top of your portrait.
 
     ![Squares](https://github.com/wodim/wow-discord-rich-presence/raw/master/images/squares.png)
 

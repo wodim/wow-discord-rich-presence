@@ -29,7 +29,7 @@ def callback(hwnd, extra):
               win32api.GetSystemMetrics(win32con.SM_CYEDGE) * 2)
 
     if (win32gui.GetWindowText(hwnd) == 'World of Warcraft' and
-            win32gui.GetClassName(hwnd) == 'GxWindowClassD3d9Ex'):
+            win32gui.GetClassName(hwnd).startswith('GxWindowClass')):
         found = True
 
         if not DEBUG and win32gui.GetForegroundWindow() != hwnd:
@@ -61,8 +61,8 @@ def callback(hwnd, extra):
 
         try:
             decoded = bytes(read).decode('utf-8').rstrip('\0')
-        except:
-            print('Error decoding the pixels.')
+        except Exception as exc:
+            print('Error decoding the pixels: %s.' % exc)
             if not DEBUG:
                 return
 
