@@ -141,7 +141,7 @@ function IPC_OnLoad()
     IPCFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
     IPCFrame:RegisterEvent("WORLD_MAP_UPDATE")
     SlashCmdList["IPC"] = IPC_PaintSomething
-    SLASH_IPC1 = "/ipc";
+    SLASH_IPC1 = "/ipc"
     SlashCmdList["CLEAN"] = IPC_CleanFrames
-    SLASH_CLEAN1 = "/clean";
+    SLASH_CLEAN1 = "/clean"
 end
