@@ -102,11 +102,13 @@ function IPC_EncodeZoneType()
     elseif type == 'pvp' then
         status = 'In Battleground'
     else
+        if UnitIsDeadOrGhost("player") and not UnitIsDead("player") then
+            status = "Corpse running"
         -- if the world map is open we can't rely on it so send the last status
         -- or something generic if we've never seen a status
-        if WorldMapFrame:IsVisible() then
+        elseif WorldMapFrame:IsVisible() then
             if last_status == nil then
-                status = 'In the overworld'
+                status = "In the overworld"
             else
                 status = last_status
             end
@@ -116,12 +118,12 @@ function IPC_EncodeZoneType()
                 status = continent_name
                 last_status = status
             else
-                status = 'In the overworld'
+                status = "In the overworld"
             end
         end
     end
     if zone_name == "" or zone_name == nil then return nil end
-    local encoded = "|" .. zone_name .. "|" .. status .. "|"
+    local encoded = "$WorldOfWarcraftIPC$" .. zone_name .. "|" .. status .. "$WorldOfWarcraftIPC$"
     return encoded
 end
 

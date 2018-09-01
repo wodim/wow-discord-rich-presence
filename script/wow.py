@@ -11,94 +11,105 @@ DEBUG = 0
 
 MY_WIDTH = 11.61
 
-if not DEBUG:
-    client_id = '483214843734654987'
-    rpc_obj = rpc.DiscordIpcClient.for_platform(client_id)
-    print('RPC connection successful.')
+DISCORD_CLIENT_ID = '483214843734654987'
 
 decoded = ''
-found = False
+wow_hwnd = None
+rpc_obj = None
 
 
 def callback(hwnd, extra):
-    global found
+    global wow_hwnd
 
+    if (win32gui.GetWindowText(hwnd) == 'World of Warcraft' and
+            win32gui.GetClassName(hwnd).startswith('GxWindowClass')):
+        wow_hwnd = hwnd
+
+
+def read_squares(hwnd):
     rect = win32gui.GetWindowRect(hwnd)
     height = (win32api.GetSystemMetrics(win32con.SM_CYCAPTION) +
               win32api.GetSystemMetrics(win32con.SM_CYBORDER) * 4 +
               win32api.GetSystemMetrics(win32con.SM_CYEDGE) * 2)
 
-    if (win32gui.GetWindowText(hwnd) == 'World of Warcraft' and
-            win32gui.GetClassName(hwnd).startswith('GxWindowClass')):
-        found = True
+    new_rect = (rect[0] + 8, rect[1] + height,
+                rect[2] - 8, rect[1] + height + MY_WIDTH)
+    try:
+        im = ImageGrab.grab(new_rect)
+    except Image.DecompressionBombError:
+        print('DecompressionBombError')
+        return
 
-        if not DEBUG and win32gui.GetForegroundWindow() != hwnd:
-            return
-
-        new_rect = (rect[0] + 8, rect[1] + height,
-                    rect[2] - 8, rect[1] + height + MY_WIDTH)
-        try:
-            im = ImageGrab.grab(new_rect)
-        except Image.DecompressionBombError:
-            print('DecompressionBombError')
-            return
-
-        read = []
-        for square_idx in range(int(im.width / MY_WIDTH)):
-            x = int(square_idx * MY_WIDTH + MY_WIDTH / 2)
-            y = int(MY_WIDTH / 2)
-            r, g, b = im.getpixel((x, y))
-
-            if DEBUG:
-                im.putpixel((x, y), (255, 255, 255))
-
-            if r == g == b == 0:
-                break
-
-            read.append(r)
-            read.append(g)
-            read.append(b)
-
-        try:
-            decoded = bytes(read).decode('utf-8').rstrip('\0')
-        except Exception as exc:
-            print('Error decoding the pixels: %s.' % exc)
-            if not DEBUG:
-                return
-
-        parts = decoded.split('|')
-        print('Read: %s' % decoded)
+    read = []
+    for square_idx in range(int(im.width / MY_WIDTH)):
+        x = int(square_idx * MY_WIDTH + MY_WIDTH / 2)
+        y = int(MY_WIDTH / 2)
+        r, g, b = im.getpixel((x, y))
 
         if DEBUG:
-            im.show()
+            im.putpixel((x, y), (255, 255, 255))
+
+        if r == g == b == 0:
+            break
+
+        read.append(r)
+        read.append(g)
+        read.append(b)
+
+    try:
+        decoded = bytes(read).decode('utf-8').rstrip('\0')
+    except Exception as exc:
+        print('Error decoding the pixels: %s.' % exc)
+        if not DEBUG:
             return
 
-        # sanity check
-        if (len(parts) != 4 or
-                not decoded.endswith('|') or
-                not decoded.startswith('|')):
-            print('Wrong data read.')
-            return
+    parts = decoded.replace('$WorldOfWarcraftIPC$', '').split('|')
+    print('Read: %s' % decoded)
 
-        _, zone_name, type_, _ = parts
+    if DEBUG:
+        im.show()
+        return
 
-        activity = {
-            'state': type_,
-            'details': zone_name,
-            'assets': {
-                'large_image': 'wow-icon'
-            }
+    # sanity check
+    if (len(parts) != 2 or
+            not decoded.endswith('$WorldOfWarcraftIPC$') or
+            not decoded.startswith('$WorldOfWarcraftIPC$')):
+        print('Wrong data read.')
+        return
+
+    zone_name, type_ = parts
+
+    activity = {
+        'state': type_,
+        'details': zone_name,
+        'assets': {
+            'large_image': 'wow-icon'
         }
-        print('Setting: %s' % activity)
-        rpc_obj.set_activity(activity)
+    }
+
+    print('Setting: %s' % activity)
+    rpc_obj.set_activity(activity)
 
 
-if DEBUG:
+while True:
+    wow_hwnd = None
     win32gui.EnumWindows(callback, None)
-else:
-    while True:
-        found = False
-        win32gui.EnumWindows(callback, None)
-        if not found:
-            rpc_obj.set_activity({})
-        time.sleep(5)
+
+    if DEBUG:
+        if wow_hwnd:
+            print('Debug: reading squares. Is everything alright?')
+            read_squares(wow_hwnd)
+        else:
+            print("Launching in debug mode but I couldn't find WoW.")
+        break
+    elif win32gui.GetForegroundWindow() == wow_hwnd:
+        if not rpc_obj:
+            print('Not connected, connecting')
+            rpc_obj = rpc.DiscordIpcClient.for_platform(DISCORD_CLIENT_ID)
+            print('Connected to RPC.')
+        read_squares(wow_hwnd)
+    elif not wow_hwnd and rpc_obj:
+        print('WoW no longer exists, disconnecting')
+        rpc_obj.close()
+        rpc_obj = None
+    time.sleep(5)

@@ -1,6 +1,8 @@
 frame_count = 0
 frames = {}
-last_status = nil
+last_continent = nil
+
+IPC_InjectedStatus = nil
 
 function IPC_CreateFrames()
     local size = 12
@@ -93,28 +95,39 @@ function GetContinentName(continentID)
     end
 end
 
-function IPC_EncodeZoneType()
+function IPC_EncodeZoneType(subtext)
     local zone_name = GetRealZoneText()
-    -- if the world map is open we can't rely on it so send the last status
-    -- or something generic if we've never seen a status
-    if WorldMapFrame:IsVisible() then
-        if last_status == nil then
-            status = 'In the overworld'
-        else
-            status = last_status
-        end
+    if IPC_InjectedStatus then
+        status = IPC_InjectedStatus
     else
-        local continent_name = GetContinentName(GetCurrentMapContinent())
-        if continent_name then
-            status = continent_name
-            last_status = status
+        -- if the world map is open we can't rely on it so send the last status
+        -- or something generic if we've never seen a status
+        if UnitIsDeadOrGhost("player") and not UnitIsDead("player") then
+            status = "Corpse running"
+        elseif WorldMapFrame:IsVisible() then
+            if last_continent == nil then
+                status = "In the overworld"
+            else
+                status = last_continent
+            end
         else
-            status = 'In the overworld'
+            local continent_name = GetContinentName(GetCurrentMapContinent())
+            if continent_name then
+                status = continent_name
+                last_continent = status
+            else
+                status = "In the overworld"
+            end
         end
     end
     if zone_name == "" or zone_name == nil then return nil end
-    local encoded = "|" .. zone_name .. "|" .. status .. "|"
+    local encoded = "$WorldOfWarcraftIPC$" .. zone_name .. "|" .. status .. "$WorldOfWarcraftIPC$"
     return encoded
+end
+
+function IPC_UpdateSquares()
+    local encoded = IPC_EncodeZoneType()
+    if encoded ~= nil then IPC_PaintSomething(encoded) end
 end
 
 -- received addon events.
@@ -122,8 +135,7 @@ function IPC_OnEvent(this, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8
     if event == "PLAYER_LOGIN" then
         IPC_CreateFrames()
     elseif event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" or event == "WORLD_MAP_UPDATE" then
-        local encoded = IPC_EncodeZoneType()
-        if encoded ~= nil then IPC_PaintSomething(encoded) end
+        IPC_UpdateSquares()
     end
 end
 
