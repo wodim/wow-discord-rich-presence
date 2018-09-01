@@ -53,4 +53,4 @@ From now on, you can double-click the wow.py file and it will work by itself. Yo
 ## Licence
 
 Both the addon and the wow.py script are in the public domain.
-The rpc.py file is from [this repo](https://github.com/suclearnub/python-discord-rpc) and it's [MIT licenced](https://raw.githubusercontent.com/wodim/wow-discord-rich-presence/master/script/rcp.py-LICENSE).
+The rpc.py file is from [this repo](https://github.com/suclearnub/python-discord-rpc) and it's [MIT licenced](https://raw.githubusercontent.com/wodim/wow-discord-rich-presence/master/script/rpc.py-LICENSE).
