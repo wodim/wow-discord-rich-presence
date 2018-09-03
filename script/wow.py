@@ -17,6 +17,9 @@ decoded = ''
 wow_hwnd = None
 rpc_obj = None
 
+last_first_line = None
+last_second_line = None
+
 
 def callback(hwnd, extra):
     global wow_hwnd
@@ -64,7 +67,6 @@ def read_squares(hwnd):
             return
 
     parts = decoded.replace('$WorldOfWarcraftIPC$', '').split('|')
-    print('Read: %s' % decoded)
 
     if DEBUG:
         im.show()
@@ -74,21 +76,12 @@ def read_squares(hwnd):
     if (len(parts) != 2 or
             not decoded.endswith('$WorldOfWarcraftIPC$') or
             not decoded.startswith('$WorldOfWarcraftIPC$')):
-        print('Wrong data read.')
+        print('Wrong data read: %s' % decoded)
         return
 
-    zone_name, type_ = parts
+    first_line, second_line = parts
 
-    activity = {
-        'state': type_,
-        'details': zone_name,
-        'assets': {
-            'large_image': 'wow-icon'
-        }
-    }
-
-    print('Setting: %s' % activity)
-    rpc_obj.set_activity(activity)
+    return first_line, second_line
 
 
 while True:
@@ -107,7 +100,22 @@ while True:
             print('Not connected, connecting')
             rpc_obj = rpc.DiscordIpcClient.for_platform(DISCORD_CLIENT_ID)
             print('Connected to RPC.')
-        read_squares(wow_hwnd)
+
+        first_line, second_line = read_squares(wow_hwnd)
+
+        if first_line != last_first_line or second_line != last_second_line:
+            last_first_line = first_line
+            last_second_line = second_line
+
+            print('Setting new activity: %s - %s' % (first_line, second_line))
+            activity = {
+                'details': first_line,
+                'state': second_line,
+                'assets': {
+                    'large_image': 'wow-icon'
+                }
+            }
+            rpc_obj.set_activity(activity)
     elif not wow_hwnd and rpc_obj:
         print('WoW no longer exists, disconnecting')
         rpc_obj.close()
