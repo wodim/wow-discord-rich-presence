@@ -101,7 +101,12 @@ while True:
             rpc_obj = rpc.DiscordIpcClient.for_platform(DISCORD_CLIENT_ID)
             print('Connected to RPC.')
 
-        first_line, second_line = read_squares(wow_hwnd)
+        lines = read_squares(wow_hwnd)
+
+        if not lines:
+            continue
+
+        first_line, second_line = lines
 
         if first_line != last_first_line or second_line != last_second_line:
             last_first_line = first_line
@@ -115,6 +120,7 @@ while True:
                     'large_image': 'wow-icon'
                 }
             }
+
             rpc_obj.set_activity(activity)
     elif not wow_hwnd and rpc_obj:
         print('WoW no longer exists, disconnecting')
