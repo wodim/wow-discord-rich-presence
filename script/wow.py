@@ -104,6 +104,7 @@ while True:
         lines = read_squares(wow_hwnd)
 
         if not lines:
+            time.sleep(1)
             continue
 
         first_line, second_line = lines
