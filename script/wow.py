@@ -127,4 +127,6 @@ while True:
         print('WoW no longer exists, disconnecting')
         rpc_obj.close()
         rpc_obj = None
+        # clear these so it gets reread and resubmitted upon reconnection
+        last_first_line, last_second_line = None, None
     time.sleep(5)
