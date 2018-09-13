@@ -97,9 +97,19 @@ while True:
         break
     elif win32gui.GetForegroundWindow() == wow_hwnd:
         if not rpc_obj:
-            print('Not connected, connecting')
-            rpc_obj = rpc.DiscordIpcClient.for_platform(DISCORD_CLIENT_ID)
-            print('Connected to RPC.')
+            print('Not connected to Discord, connecting...')
+            while True:
+                try:
+                    rpc_obj = (rpc.DiscordIpcClient
+                               .for_platform(DISCORD_CLIENT_ID))
+                except Exception as exc:
+                    print("I couldn't connect to Discord (%s). It's probably "
+                          'not running. I will try again in 5 sec.' % str(exc))
+                    time.sleep(5)
+                    pass
+                else:
+                    break
+            print('Connected to Discord.')
 
         lines = read_squares(wow_hwnd)
 
@@ -122,7 +132,13 @@ while True:
                 }
             }
 
-            rpc_obj.set_activity(activity)
+            try:
+                rpc_obj.set_activity(activity)
+            except Exception as exc:
+                print('Looks like the connection to Discord was broken (%s). '
+                      'I will try to connect again in 5 sec.' % str(exc))
+                last_first_line, last_second_line = None, None
+                rpc_obj = None
     elif not wow_hwnd and rpc_obj:
         print('WoW no longer exists, disconnecting')
         rpc_obj.close()
