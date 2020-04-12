@@ -10,7 +10,7 @@ import win32gui
 # variables that can be configured
 DEBUG = 0
 MY_WIDTH = 11.61
-DISCORD_CLIENT_ID = '483214843734654987'
+DISCORD_CLIENT_ID = '697773913018597376'
 
 # these are internal use variables, don't touch them
 decoded = ''
@@ -66,17 +66,17 @@ def read_squares(hwnd):
         if not DEBUG:
             return
 
-    parts = decoded.replace('$WorldOfWarcraftIPC$', '').split('|')
-
     if DEBUG:
         im.show()
         return
+
+    parts = decoded.replace('$WorldOfWarcraftIPC$', '').split('|')
 
     # sanity check
     if (len(parts) != 2 or
             not decoded.endswith('$WorldOfWarcraftIPC$') or
             not decoded.startswith('$WorldOfWarcraftIPC$')):
-        print('Wrong data read: %s' % decoded)
+        # print('Wrong data read: %s' % decoded.replace('\a', ''))
         return
 
     first_line, second_line = parts
@@ -165,4 +165,4 @@ while True:
         rpc_obj = None
         # clear these so it gets reread and resubmitted upon reconnection
         last_first_line, last_second_line = None, None
-    time.sleep(5)
+    time.sleep(.5)

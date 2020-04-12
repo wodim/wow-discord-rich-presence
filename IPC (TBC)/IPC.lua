@@ -1,8 +1,8 @@
-frame_count = 0
-frames = {}
-last_continent = nil
+local frame_count = 0
+local frames = {}
+local last_continent = nil
 
-IPC_InjectedStatus = nil
+local IPC_InjectedStatus = nil
 
 function IPC_CreateFrames()
     local size = 12
@@ -100,13 +100,13 @@ function IPC_EncodeZoneType(subtext)
     if IPC_InjectedStatus then
         status = IPC_InjectedStatus
     else
-        -- if the world map is open we can't rely on it so send the last status
-        -- or something generic if we've never seen a status
         if UnitIsDeadOrGhost("player") and not UnitIsDead("player") then
             status = "Corpse running"
+        -- if the world map is open we can't rely on it so send the last status
+        -- or something generic if we've never seen a status
         elseif WorldMapFrame:IsVisible() then
             if last_continent == nil then
-                status = "In the overworld"
+                status = "In Game"
             else
                 status = last_continent
             end
@@ -116,9 +116,14 @@ function IPC_EncodeZoneType(subtext)
                 status = continent_name
                 last_continent = status
             else
-                -- swap these: title is subzone, subtitle is zone
-                status = GetRealZoneText()
-                zone_name = GetZoneText()
+                subzone_name = GetZoneText()
+                if subzone_name == zone_name then
+                    status = "In Instance"
+                else
+                    -- if inside an instance, show the subzone
+                    status = zone_name
+                    zone_name = GetZoneText()
+                end
             end
         end
     end
@@ -130,6 +135,11 @@ end
 function IPC_UpdateSquares()
     local encoded = IPC_EncodeZoneType()
     if encoded ~= nil then IPC_PaintSomething(encoded) end
+end
+
+function IPC_InjectStatus(status)
+    IPC_InjectedStatus = status
+    IPC_UpdateSquares()
 end
 
 -- received addon events.
